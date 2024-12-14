@@ -6,6 +6,10 @@ app.use(express.static("public"));
 const { blockchain, pendingTransactions, createBlock } = require("./blockchain");
 const { Wallet } = require("./wallet");
 const { getBlockByHash, getAddressData } = require("./explorer");
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+const cors = require("cors");
+app.use(cors());
 
 const app = express();
 app.use(bodyParser.json());
