@@ -1,6 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const { blockchain, pendingTransactions, nodes, createBlock, mine } = require("./blockchain");
+const Wallet = require("./wallet");
+const ownerWallet = new Wallet();
+console.log("Owner Address:", ownerWallet.getAddress());
 
 const app = express();
 app.use(bodyParser.json());
