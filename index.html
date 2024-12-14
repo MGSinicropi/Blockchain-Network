@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Frontend</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      header {
+        background: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .form-group input,
+      .form-group button {
+        padding: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        background: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #555;
+      }
+      pre {
+        background: #e8e8e8;
+        padding: 1rem;
+        overflow: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Blockchain Explorer</h1>
+    </header>
+    <div class="container">
+      <h2>Create a Transaction</h2>
+      <div class="form-group">
+        <label for="sender">Sender</label>
+        <input type="text" id="sender" placeholder="Sender address" />
+      </div>
+      <div class="form-group">
+        <label for="recipient">Recipient</label>
+        <input type="text" id="recipient" placeholder="Recipient address" />
+      </div>
+      <div class="form-group">
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" placeholder="Amount" />
+      </div>
+      <button onclick="createTransaction()">Add Transaction</button>
+
+      <h2>Mine a Block</h2>
+      <button onclick="mineBlock()">Mine</button>
+
+      <h2>View Blockchain</h2>
+      <button onclick="viewBlockchain()">View</button>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:3000";
+
+      // Helper function to display output
+      function displayOutput(data) {
+        const outputElement = document.getElementById("output");
+        outputElement.textContent = JSON.stringify(data, null, 2);
+      }
+
+      // Create a new transaction
+      async function createTransaction() {
+        const sender = document.getElementById("sender").value;
+        const recipient = document.getElementById("recipient").value;
+        const amount = parseFloat(document.getElementById("amount").value);
+
+        const response = await fetch(`${API_BASE}/transaction`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sender, recipient, amount }),
+        });
+        const result = await response.json();
+        displayOutput(result);
+      }
+
+      // Mine a new block
+      async function mineBlock() {
+        const response = await fetch(`${API_BASE}/mine`);
+        const result = await response.json();
+        displayOutput(result);
+      }
+
+      // View the entire blockchain
+      async function viewBlockchain() {
+        const response = await fetch(`${API_BASE}/chain`);
+        const result = await response.json();
+        displayOutput(result);
+      }
+    </script>
+  </body>
+</html>
