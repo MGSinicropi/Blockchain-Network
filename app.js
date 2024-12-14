@@ -60,6 +60,12 @@ app.get("/address/:address", (req, res) => {
     res.json(data);
 });
 
+app.use((req, res, next) => {
+    console.log(`Request URL: ${req.url}, Method: ${req.method}, Body:`, req.body);
+    next();
+});
+
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Node running on port ${PORT}`);
