@@ -1,14 +1,16 @@
+// app.js
 const express = require("express");
 const bodyParser = require("body-parser");
-const { blockchain, pendingTransactions, nodes, createBlock, mine } = require("./blockchain");
-const Wallet = require("./wallet");
-const ownerWallet = new Wallet();
-console.log("Owner Address:", ownerWallet.getAddress());
+const { blockchain, pendingTransactions, createBlock } = require("./blockchain");
+const { Wallet } = require("./wallet");
+const { getBlockByHash, getAddressData } = require("./explorer");
 
 const app = express();
 app.use(bodyParser.json());
 
-// REST API Endpoints
+let nodes = new Set();
+
+// REST API
 app.post("/transaction", (req, res) => {
     const { sender, recipient, amount } = req.body;
     const transaction = { sender, recipient, amount };
@@ -17,8 +19,11 @@ app.post("/transaction", (req, res) => {
 });
 
 app.get("/mine", (req, res) => {
-    mine();
-    res.json(blockchain[blockchain.length - 1]);
+    const previousBlock = blockchain[blockchain.length - 1];
+    const block = createBlock(previousBlock.hash, pendingTransactions);
+    blockchain.push(block);
+    pendingTransactions.length = 0;
+    res.json(block);
 });
 
 app.get("/chain", (req, res) => {
@@ -35,6 +40,18 @@ app.post("/faucet", (req, res) => {
     const { recipient, amount } = req.body;
     pendingTransactions.push({ sender: "faucet", recipient, amount });
     res.json({ message: "Faucet transaction added!" });
+});
+
+// Block Explorer
+app.get("/block/:hash", (req, res) => {
+    const block = getBlockByHash(req.params.hash);
+    if (block) res.json(block);
+    else res.status(404).json({ message: "Block not found" });
+});
+
+app.get("/address/:address", (req, res) => {
+    const data = getAddressData(req.params.address);
+    res.json(data);
 });
 
 const PORT = 3000;
