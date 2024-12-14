@@ -1,6 +1,8 @@
 // app.js
 const express = require("express");
 const bodyParser = require("body-parser");
+app.use(express.static("public"));
+
 const { blockchain, pendingTransactions, createBlock } = require("./blockchain");
 const { Wallet } = require("./wallet");
 const { getBlockByHash, getAddressData } = require("./explorer");
