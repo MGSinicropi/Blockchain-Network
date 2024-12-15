@@ -16,58 +16,80 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Update the output display
+    function updateOutput(message) {
+        const outputElement = document.getElementById("output");
+        if (outputElement) {
+            outputElement.innerText = message;
+        }
+    }
+
     // Adds a transaction
     async function addTransaction() {
-        const sender = document.getElementById('sender')?.value.trim();
-        const recipient = document.getElementById('recipient')?.value.trim();
-        const amount = parseFloat(document.getElementById('amount')?.value);
+        const sender = document.getElementById("sender")?.value.trim();
+        const recipient = document.getElementById("recipient")?.value.trim();
+        const amount = parseFloat(document.getElementById("amount")?.value);
 
         if (!sender || !recipient || isNaN(amount) || amount <= 0) {
-            document.getElementById('output').innerText = 'Invalid transaction details. Please provide all fields correctly.';
+            updateOutput("Invalid transaction details. Please provide all fields correctly.");
             return;
         }
 
+        console.log("Submitting transaction:", { sender, recipient, amount });
+
         const data = await apiFetch(`${apiBase}/transaction`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sender, recipient, amount }),
         });
 
-        document.getElementById('output').innerText = data.error || JSON.stringify(data, null, 2);
+        updateOutput(data.error || `Transaction added:\n${JSON.stringify(data, null, 2)}`);
     }
 
     // Fetches block by hash
     async function fetchBlockByHash() {
-        const blockHash = document.getElementById('blockHash')?.value.trim();
+        const blockHash = document.getElementById("blockHash")?.value.trim();
         if (!blockHash) {
-            document.getElementById('output').innerText = 'Please provide a valid block hash!';
+            updateOutput("Please provide a valid block hash!");
             return;
         }
 
+        console.log("Fetching block by hash:", blockHash);
+
         const data = await apiFetch(`${apiBase}/block/${blockHash}`);
-        document.getElementById('output').innerText = data.error || JSON.stringify(data, null, 2);
+        updateOutput(data.error || `Block details:\n${JSON.stringify(data, null, 2)}`);
     }
 
     // Event: Mine a new block
     document.getElementById("mine-block")?.addEventListener("click", async () => {
+        console.log("Mining block...");
+
         const block = await apiFetch(`${apiBase}/mine`);
         alert(block.error || `New block mined:\n${JSON.stringify(block, null, 2)}`);
     });
 
     // Event: View the blockchain
     document.getElementById("view-chain")?.addEventListener("click", async () => {
+        console.log("Fetching the blockchain...");
+
         const chain = await apiFetch(`${apiBase}/chain`);
-        document.getElementById("chain-display").innerText = chain.error || JSON.stringify(chain, null, 2);
+        const chainDisplay = document.getElementById("chain-display");
+        if (chainDisplay) {
+            chainDisplay.innerText = chain.error || `Blockchain:\n${JSON.stringify(chain, null, 2)}`;
+        }
     });
 
     // Event: Register a new node
     document.getElementById("register-node-form")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const nodeUrl = document.getElementById("node-url")?.value.trim();
+
         if (!/^https?:\/\/.+/.test(nodeUrl)) {
             alert("Invalid URL format. Please include 'http://' or 'https://'.");
             return;
         }
+
+        console.log("Registering node:", nodeUrl);
 
         const result = await apiFetch(`${apiBase}/register-node`, {
             method: "POST",
@@ -82,19 +104,24 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("check-address-form")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const address = document.getElementById("address")?.value.trim();
+
         if (!address) {
             alert("Please provide a valid address!");
             return;
         }
 
+        console.log("Fetching address data:", address);
+
         const data = await apiFetch(`${apiBase}/address/${address}`);
         const balanceDisplay = document.getElementById("balance-display");
-        balanceDisplay.innerText = data.error
-            ? `Error: ${data.error}`
-            : `Balance: ${data.balance}\nTransactions:\n${JSON.stringify(data.transactions, null, 2)}`;
+        if (balanceDisplay) {
+            balanceDisplay.innerText = data.error
+                ? `Error: ${data.error}`
+                : `Balance: ${data.balance}\nTransactions:\n${JSON.stringify(data.transactions, null, 2)}`;
+        }
     });
 
-    // Event: Add transaction
+    // Attach Event Listeners
     document.getElementById("add-transaction")?.addEventListener("click", addTransaction);
     document.getElementById("fetch-block")?.addEventListener("click", fetchBlockByHash);
 });
