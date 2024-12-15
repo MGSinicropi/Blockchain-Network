@@ -37,6 +37,11 @@ app.get("/mine", (req, res) => {
     }
     const previousBlock = blockchain[blockchain.length - 1];
     const block = createBlock(previousBlock.hash, pendingTransactions);
+
+     if (!isValidBlock(block, previousBlock)) {
+        return res.status(500).json({ message: "Mining failed due to block validation error" });
+    }
+
     blockchain.push(block);
     pendingTransactions.length = 0;
     res.json({ message: "Block mined successfully!", block });
@@ -69,16 +74,12 @@ if (!isValidUrl(nodeUrl)) {
 
 app.post("/faucet", (req, res) => {
     const { recipient, amount } = req.body;
-    if (!recipient || !amount) {
+    if (!recipient || !amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid faucet transaction data" });
     }
     const transaction = { sender: "faucet", recipient, amount };
     pendingTransactions.push(transaction);
     res.json({ message: "Faucet transaction added!", transaction });
-    if (amount <= 0) {
-    return res.status(400).json({ message: "Amount must be greater than zero" });
-}
-
 });
 
 // Wallet API
