@@ -1,4 +1,5 @@
-const blockchain = []; // Replace with your actual blockchain data structure
+// Import or link to your blockchain data structure
+const blockchain = []; // Ensure this is replaced or linked to your actual blockchain data
 
 /**
  * Get block details by its hash.
@@ -6,6 +7,8 @@ const blockchain = []; // Replace with your actual blockchain data structure
  * @returns {object|null} - The block if found, otherwise null.
  */
 export function getBlockByHash(hash) {
+    console.log("Searching for block with hash:", hash); // Log the hash being searched
+
     if (!hash) {
         console.error("Invalid block hash provided.");
         return null;
@@ -14,7 +17,7 @@ export function getBlockByHash(hash) {
     // Search for the block in the blockchain
     const block = blockchain.find((block) => block.hash === hash);
     if (!block) {
-        console.log(`Block not found for hash: ${hash}`);
+        console.error(`Block not found for hash: ${hash}`);
         return null;
     }
 
@@ -28,6 +31,8 @@ export function getBlockByHash(hash) {
  * @returns {object} - The address data, including balance and transactions.
  */
 export function getAddressData(address) {
+    console.log("Fetching data for address:", address); // Log the address being searched
+
     if (!address) {
         console.error("Invalid address provided.");
         return null;
@@ -36,9 +41,17 @@ export function getAddressData(address) {
     let balance = 0;
     const transactions = [];
 
+    console.log("Iterating through blockchain to calculate balance and transactions...");
     // Iterate through all blocks and transactions in the blockchain
-    blockchain.forEach((block) => {
-        block.transactions.forEach((transaction) => {
+    blockchain.forEach((block, blockIndex) => {
+        console.log(`Checking block ${blockIndex + 1}:`, block);
+
+        block.transactions.forEach((transaction, transactionIndex) => {
+            console.log(
+                `Checking transaction ${transactionIndex + 1} in block ${block.index}:`,
+                transaction
+            );
+
             if (transaction.sender === address) {
                 balance -= transaction.amount;
                 transactions.push({
@@ -47,6 +60,11 @@ export function getAddressData(address) {
                     recipient: transaction.recipient,
                     timestamp: block.timestamp,
                 });
+
+                console.log(
+                    `Sender match found in block ${block.index}, transaction ${transactionIndex + 1}:`,
+                    transaction
+                );
             } else if (transaction.recipient === address) {
                 balance += transaction.amount;
                 transactions.push({
@@ -55,6 +73,11 @@ export function getAddressData(address) {
                     sender: transaction.sender,
                     timestamp: block.timestamp,
                 });
+
+                console.log(
+                    `Recipient match found in block ${block.index}, transaction ${transactionIndex + 1}:`,
+                    transaction
+                );
             }
         });
     });
