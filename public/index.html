@@ -2,111 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blockchain Explorer</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #fff;
-        color: #333;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-      }
-      header {
-        background-color: #004aad;
-        color: white;
-        padding: 20px 0;
-        margin-bottom: 20px;
-      }
-      button {
-        background-color: #d00000;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        margin: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        border-radius: 5px;
-      }
-      button:hover {
-        background-color: #a80000;
-      }
-      input[type="text"],
-      input[type="number"] {
-        margin: 5px;
-        padding: 8px;
-        font-size: 14px;
-        width: calc(100% - 20px);
-        max-width: 300px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      #output {
-        margin-top: 20px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        background-color: #e6f7ff;
-        width: 80%;
-        margin: auto;
-        text-align: left;
-        word-wrap: break-word;
-        font-family: monospace;
-        border-radius: 5px;
-      }
-      .section {
-        margin-bottom: 30px;
-      }
-      h2 {
-        color: #004aad;
-        margin-bottom: 10px;
-      }
-    </style>
+    <script src="frontend.js" defer></script>
   </head>
   <body>
-    <header>
-      <h1>Blockchain Explorer</h1>
-    </header>
-    <main>
-      <div class="section">
-        <h2>Faucet Transaction</h2>
-        <input
-          type="text"
-          id="faucetRecipient"
-          placeholder="Recipient Address"
-        />
-        <input type="number" id="faucetAmount" placeholder="Amount" />
-        <button id="faucet-transaction">Send Faucet Transaction</button>
-      </div>
-
-      <div class="section">
-        <h2>Blockchain Actions</h2>
-        <button id="view-chain">View Blockchain</button>
-        <button id="mine-block">Mine Block</button>
-      </div>
-
-      <div class="section">
-        <h2>Add Transaction</h2>
-        <input type="text" id="sender" placeholder="Sender Address" />
-        <input type="text" id="recipient" placeholder="Recipient Address" />
-        <input type="number" id="amount" placeholder="Amount" />
-        <button id="add-transaction">Add Transaction</button>
-      </div>
-
-      <div class="section">
-        <h2>View Block by Hash</h2>
-        <input type="text" id="blockHash" placeholder="Block Hash" />
-        <button id="fetch-block">Fetch Block</button>
-      </div>
-
-      <div class="section">
-        <h2>Check Wallet Balance</h2>
-        <input type="text" id="address" placeholder="Wallet Address" />
-        <button id="check-address">View Balance</button>
-      </div>
-
-      <div id="output"></div>
-    </main>
-    <script src="frontend.js"></script>
+    <h1>Blockchain Explorer</h1>
+    <div>
+      <h2>Wallet</h2>
+      <button onclick="createWallet()">Create Wallet</button>
+      <div id="wallet-output"></div>
+    </div>
+    <div>
+      <h2>Transactions</h2>
+      <input type="text" id="sender" placeholder="Sender" />
+      <input type="text" id="recipient" placeholder="Recipient" />
+      <input type="number" id="amount" placeholder="Amount" />
+      <button onclick="addTransaction()">Add Transaction</button>
+    </div>
+    <div>
+      <h2>Mine Block</h2>
+      <button onclick="mineBlock()">Mine</button>
+    </div>
+    <div>
+      <h2>Blockchain</h2>
+      <button onclick="fetchChain()">View Blockchain</button>
+      <div id="chain-output"></div>
+    </div>
   </body>
 </html>
