@@ -1,4 +1,4 @@
-const blockchain = []; // Replace with your actual blockchain data structure
+import { blockchain } from "./blockchain.js";
 
 /**
  * Get block details by its hash.
@@ -6,7 +6,10 @@ const blockchain = []; // Replace with your actual blockchain data structure
  * @returns {object|null} - The block if found, otherwise null.
  */
 export function getBlockByHash(hash) {
-    console.log("Searching for block with hash:", hash);
+    if (!hash) {
+        console.error("Invalid block hash provided.");
+        return null;
+    }
 
     const block = blockchain.find((block) => block.hash === hash);
     if (!block) {
@@ -18,17 +21,16 @@ export function getBlockByHash(hash) {
     return block;
 }
 
-
 /**
- * Get data associated with a specific wallet address.
+ * Get address data, including balance and transactions.
  * @param {string} address - The address to fetch data for.
- * @returns {object} - The address data, including balance and transactions.
+ * @returns {object} - The balance and list of transactions for the address.
  */
 export function getAddressData(address) {
-    console.log("Fetching data for address:", address);
-
-    // Normalize the queried address
-    const normalizedAddress = address.trim();
+    if (!address) {
+        console.error("Invalid address provided.");
+        return null;
+    }
 
     let balance = 0;
     const transactions = [];
@@ -36,32 +38,31 @@ export function getAddressData(address) {
     // Iterate through all blocks and transactions in the blockchain
     blockchain.forEach((block) => {
         block.transactions.forEach((transaction) => {
-            const normalizedSender = transaction.sender.trim();
-            const normalizedRecipient = transaction.recipient.trim();
-
-            if (normalizedSender === normalizedAddress) {
+            if (transaction.sender === address) {
                 balance -= transaction.amount;
                 transactions.push({
                     type: "sent",
                     amount: transaction.amount,
-                    recipient: normalizedRecipient,
+                    recipient: transaction.recipient,
                     timestamp: block.timestamp,
                 });
-            } else if (normalizedRecipient === normalizedAddress) {
+            } else if (transaction.recipient === address) {
                 balance += transaction.amount;
                 transactions.push({
                     type: "received",
                     amount: transaction.amount,
-                    sender: normalizedSender,
+                    sender: transaction.sender,
                     timestamp: block.timestamp,
                 });
             }
         });
     });
 
-    console.log(`Address data for ${normalizedAddress}:`, { balance, transactions });
+    if (transactions.length === 0) {
+        console.log(`No transactions found for address: ${address}`);
+    } else {
+        console.log(`Address data for ${address}:`, { balance, transactions });
+    }
+
     return { balance, transactions };
 }
-
-
-

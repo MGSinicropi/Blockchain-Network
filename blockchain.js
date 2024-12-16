@@ -1,51 +1,51 @@
 import crypto from "crypto";
 
-const blockchain = [
-  {
-    index: 1,
-    timestamp: Date.now(),
-    transactions: [],
-    previousHash: "0",
-    hash: generateBlockHash("0", [], Date.now()),
-  },
-];
-
+const blockchain = [];
 const pendingTransactions = [];
 
 function generateBlockHash(previousHash, transactions, timestamp) {
-  const data = `${previousHash}${JSON.stringify(transactions)}${timestamp}`;
-  return crypto.createHash("sha256").update(data).digest("hex");
+    const data = `${previousHash}${JSON.stringify(transactions)}${timestamp}`;
+    return crypto.createHash("sha256").update(data).digest("hex");
+}
+
+function createGenesisBlock() {
+    const genesisBlock = {
+        index: 1,
+        timestamp: Date.now(),
+        transactions: [],
+        previousHash: "0",
+        hash: generateBlockHash("0", [], Date.now()),
+    };
+    blockchain.push(genesisBlock);
 }
 
 function createBlock(previousHash, transactions) {
-  const timestamp = Date.now();
-  const block = {
-    index: blockchain.length + 1,
-    timestamp,
-    transactions,
-    previousHash,
-    hash: generateBlockHash(previousHash, transactions, timestamp),
-  };
-  return block;
+    const timestamp = Date.now();
+    return {
+        index: blockchain.length + 1,
+        timestamp,
+        transactions,
+        previousHash,
+        hash: generateBlockHash(previousHash, transactions, timestamp),
+    };
 }
 
-function isValidChain(chain) {
-  for (let i = 1; i < chain.length; i++) {
-    const currentBlock = chain[i];
-    const previousBlock = chain[i - 1];
-    if (
-      currentBlock.previousHash !== previousBlock.hash ||
-      currentBlock.hash !==
-        generateBlockHash(
-          currentBlock.previousHash,
-          currentBlock.transactions,
-          currentBlock.timestamp
-        )
-    ) {
-      return false;
+function minePendingTransactions() {
+    if (pendingTransactions.length === 0) throw new Error("No transactions to mine");
+    const previousHash = blockchain[blockchain.length - 1].hash;
+    const block = createBlock(previousHash, pendingTransactions);
+    blockchain.push(block);
+    pendingTransactions.length = 0;
+    return block;
+}
+
+function addTransaction(transaction) {
+    if (!transaction.sender || !transaction.recipient || transaction.amount <= 0) {
+        throw new Error("Invalid transaction");
     }
-  }
-  return true;
+    pendingTransactions.push(transaction);
 }
 
-export { blockchain, pendingTransactions, createBlock, isValidChain };
+createGenesisBlock();
+
+export { blockchain, pendingTransactions, createBlock, minePendingTransactions, addTransaction };

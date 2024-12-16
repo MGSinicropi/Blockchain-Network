@@ -2,31 +2,163 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blockchain Explorer</title>
-    <script src="frontend.js" defer></script>
+    <style>
+      /* General Page Styling */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #004aad; /* Blue background */
+        color: white;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        color: white;
+      }
+
+      button {
+        background-color: #d00000; /* Red buttons */
+        color: white; /* White text */
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      button:hover {
+        opacity: 0.9;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        margin: 10px;
+        padding: 8px;
+        font-size: 14px;
+        width: 300px;
+        max-width: 100%;
+        border: none;
+        border-radius: 5px;
+      }
+
+      input::placeholder {
+        color: #aaa;
+      }
+
+      main {
+        text-align: center;
+        max-width: 800px;
+        background-color: #d00000; /* Red box */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      #output {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid white;
+        background-color: #d00000; /* Red box */
+        color: white; /* White text */
+        border-radius: 10px;
+        text-align: left;
+        font-family: monospace;
+        white-space: pre-wrap;
+        overflow-x: auto;
+      }
+
+      #error-output {
+        color: yellow;
+        font-size: 14px;
+        margin: 10px 0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        main {
+          padding: 10px;
+        }
+
+        button {
+          font-size: 14px;
+          padding: 8px 16px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body>
-    <h1>Blockchain Explorer</h1>
-    <div>
-      <h2>Wallet</h2>
-      <button onclick="createWallet()">Create Wallet</button>
-      <div id="wallet-output"></div>
-    </div>
-    <div>
-      <h2>Transactions</h2>
-      <input type="text" id="sender" placeholder="Sender" />
-      <input type="text" id="recipient" placeholder="Recipient" />
+    <header>
+      <h1>Blockchain Explorer</h1>
+    </header>
+    <main>
+      <h2>Create Wallet</h2>
+      <button id="create-wallet" aria-label="Create a new wallet">
+        Create Wallet
+      </button>
+      <div id="wallet-output" aria-live="polite"></div>
+
+      <h2>Faucet Transaction</h2>
+      <label for="faucetRecipient">Recipient Address</label>
+      <input type="text" id="faucetRecipient" placeholder="Recipient Address" />
+      <label for="faucetAmount">Amount</label>
+      <input type="number" id="faucetAmount" placeholder="Amount" />
+      <button id="send-faucet" aria-label="Send Faucet Transaction">
+        Send Faucet Transaction
+      </button>
+
+      <h2>Blockchain Actions</h2>
+      <button id="view-chain" aria-label="View the entire blockchain">
+        View Blockchain
+      </button>
+      <button id="mine-block" aria-label="Mine a new block">Mine Block</button>
+
+      <h2>Add Transaction</h2>
+      <label for="sender">Sender Address</label>
+      <input type="text" id="sender" placeholder="Sender Address" />
+      <label for="recipient">Recipient Address</label>
+      <input type="text" id="recipient" placeholder="Recipient Address" />
+      <label for="amount">Amount</label>
       <input type="number" id="amount" placeholder="Amount" />
-      <button onclick="addTransaction()">Add Transaction</button>
-    </div>
-    <div>
-      <h2>Mine Block</h2>
-      <button onclick="mineBlock()">Mine</button>
-    </div>
-    <div>
-      <h2>Blockchain</h2>
-      <button onclick="fetchChain()">View Blockchain</button>
-      <div id="chain-output"></div>
-    </div>
+      <button id="add-transaction" aria-label="Add a transaction">
+        Add Transaction
+      </button>
+
+      <h2>View Block by Hash</h2>
+      <label for="blockHash">Block Hash</label>
+      <input type="text" id="blockHash" placeholder="Block Hash" />
+      <button id="fetch-block" aria-label="Fetch block by hash">
+        Fetch Block
+      </button>
+
+      <h2>Check Wallet Balance</h2>
+      <label for="address">Wallet Address</label>
+      <input type="text" id="address" placeholder="Wallet Address" />
+      <button id="view-balance" aria-label="View wallet balance">
+        View Balance
+      </button>
+
+      <div id="error-output" aria-live="polite"></div>
+      <div id="output" aria-live="polite"></div>
+    </main>
+    <script src="frontend.js"></script>
   </body>
 </html>
